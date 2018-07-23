@@ -5,7 +5,7 @@ Modifications Done:
 
 1. Naive Caffe implementations for Convolutions and Batch-Normalization are memory hungry. Hence, A "MemoryBank" class has been added and is declared as a member in Layer.hpp. In this way, any Layer can demand memory which can be resued or non-reusable by specifying a bank_id and a shareable flag.
 
-2. Col2Im and Im2Col implementations are also memory hungry. For feature maps having large spatial dimensions, Col2Im and Im2Col demands excessively large memory. e.g. for a kernel size 3x3, stride = 1, Pad = 0 and feature_map of size 1x1600x256x256, it would require approx 3.7 GB. However, preallocating such a large memory doesn't show improvement in convolution operation. Hence, to avoid this, the convolution is broken into smaller operations during forward and backward pass.
+2. Col2Im and Im2Col implementations are also memory hungry. For feature maps having large spatial dimensions, Col2Im and Im2Col demands excessively large memory. e.g. for a kernel size 3x3, stride = 1, Pad = 0 and feature_map of size 1x1600x256x256, it would require approx 3.7 GB. However, preallocating such a large memory doesn't show improvement in convolution operation. Hence, to avoid this, the convolution is broken into smaller operations during forward and backward pass. Hence only a small amount of memory is allocated such as 250MB. The same work can also be done in as low as 1 MB. There is no timing overhead introduced due to this optimization. This happenes due to the fact is GPU cann't process all spatial locations at once due to limited computing cores.
 
     Forward Pass: In this case, only a chunk of spatial locations out of HxW is processed.
     Backward pass: While in this case, a chunk of channels is processed with all HxW locations.
